@@ -15,7 +15,7 @@ namespace LinqToDatabaseProject.Managers
             _dbSet = _ctx.Set<T>();
         }
 
-        public IEnumerable<T> GetAll() => _dbSet;
+        public IQueryable<T> GetAll() => _dbSet;
 
         public T? GetById(int id) => _dbSet.Find(id);
         
@@ -33,6 +33,6 @@ namespace LinqToDatabaseProject.Managers
             _dbSet.Remove(entity);
             return _ctx.SaveChanges() > 0;
         }
-        public IEnumerable<T> Filter(Expression<Func<T, bool>> filter) => _dbSet.Where(filter);
+        public IQueryable<T> Filter(Expression<Func<T, bool>> filter) => _dbSet.Where(filter);
     }
 }

@@ -14,7 +14,7 @@ namespace LinqToDatabaseProject.Controllers
     public class PlayerController : ControllerBase
     {
         private readonly GameDbContext _ctx;
-        private readonly IManager<Player> _manager;
+        private readonly IPlayerManager _manager;
 
         /*
          * Implementare le seguenti GET con LINQ to query:
@@ -32,7 +32,7 @@ namespace LinqToDatabaseProject.Controllers
             3) Player: Topolino, PlayerLevel: 10, Character: Jack, CharLevel 99
             5) Player: Gastone, PlayerLevel: 9, Character: Jason, CharLevel 100
          */
-        public PlayerController(GameDbContext ctx, IManager<Player> manager)
+        public PlayerController(GameDbContext ctx, IPlayerManager manager)
         {
             _ctx = ctx;
             _manager = manager;
@@ -41,7 +41,7 @@ namespace LinqToDatabaseProject.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            IQueryable<Player> result = (from p in _ctx.Players
+            IQueryable<Player> result = (from p in _manager.GetAll()
                                    select p);
             return Ok(result);
         }

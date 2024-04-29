@@ -2,7 +2,10 @@
 
 namespace LinqToDatabaseProject.Managers
 {
-    public class PlayerManager(GameDbContext ctx) : GenericManager<Player>(ctx), IManager<Player>
+    public class PlayerManager(GameDbContext ctx) 
+        : GenericManager<Player>(ctx), IPlayerManager
     {
+
+        public void Test() { }
     }
 }
