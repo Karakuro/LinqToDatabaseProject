@@ -6,6 +6,7 @@ namespace LinqToDatabaseProject.Data
     {
         private const int MAX_LIFE = 100;
         public int CharacterId { get; set; }
+        public int CharacterLevel { get; set; }
         public string Nickname { get; set; }
         public int LifePoints { get; set; }
         public int PlayerId { get; set; }

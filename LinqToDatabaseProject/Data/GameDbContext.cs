@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinqToDatabaseProject.Data
 {
-    public class GameDbContext : DbContext
+    public class GameDbContext : IdentityDbContext<ApplicationUser>
     {
         public GameDbContext(DbContextOptions<GameDbContext> options) : base(options) { }
         public DbSet<Item> Items { get; set; }
