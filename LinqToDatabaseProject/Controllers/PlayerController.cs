@@ -13,8 +13,9 @@ namespace LinqToDatabaseProject.Controllers
     [ApiController]
     public class PlayerController : ControllerBase
     {
-        private readonly GameDbContext _ctx;
-        private readonly IPlayerManager _manager;
+        //private readonly GameDbContext _ctx;
+        //private readonly IPlayerManager _manager;
+        private readonly IUnitOfWork _managers;
 
         /*
          * Implementare le seguenti GET con LINQ to query:
@@ -32,16 +33,15 @@ namespace LinqToDatabaseProject.Controllers
             3) Player: Topolino, PlayerLevel: 10, Character: Jack, CharLevel 99
             5) Player: Gastone, PlayerLevel: 9, Character: Jason, CharLevel 100
          */
-        public PlayerController(GameDbContext ctx, IPlayerManager manager)
+        public PlayerController(IUnitOfWork managers)
         {
-            _ctx = ctx;
-            _manager = manager;
+            _managers = managers;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            IQueryable<Player> result = (from p in _manager.GetAll()
+            IQueryable<Player> result = (from p in _managers.PlayerManager.GetAll()
                                    select p);
             return Ok(result);
         }
@@ -51,7 +51,7 @@ namespace LinqToDatabaseProject.Controllers
         [Route("{id}")]
         public IActionResult Get(int id)
         {
-            var result = (from p in _ctx.Players
+            var result = (from p in _managers.PlayerManager.GetAll()
                           where p.PlayerId == id
                           select p).SingleOrDefault();
             return Ok(result);
@@ -61,7 +61,7 @@ namespace LinqToDatabaseProject.Controllers
         [Route("GetDetails")]
         public IActionResult GetPlayers(List<int> ids)
         {
-            var result = (from p in _ctx.Players
+            var result = (from p in _managers.PlayerManager.GetAll()
                           join id in ids
                           on p.PlayerId equals id
                           select p).ToList();
@@ -72,28 +72,31 @@ namespace LinqToDatabaseProject.Controllers
         [Route("{id}/GetFullInventory")]
         public IActionResult GetFullInventory(int id)
         {
+            var chars = _managers.CharacterManager.GetAll();
+            var items = _managers.ItemManager.GetAll();
+            var inventories = _managers.InventoryManager.GetAll();
             //restituire la lista completa di tutti gli item posseduti da tutti i character di un player
             //creando come risultante un oggetto che abbia le seguenti caratteristiche: Nome Item e quantità totale
-            var result = (from item in _ctx.Items
-                          join inv in _ctx.Inventories on item.ItemId equals inv.ItemId
-                          join cha in _ctx.Characters on inv.CharacterId equals cha.CharacterId
+            var result = (from item in items
+                          join inv in inventories on item.ItemId equals inv.ItemId
+                          join cha in chars on inv.CharacterId equals cha.CharacterId
                           where cha.PlayerId == id
                           group inv.ItemCount by item into grouped
                           select new { grouped.Key.Name, Total = grouped.Sum() });
 
-            var result3 = _ctx.Items
-                .Join(_ctx.Inventories, item => item.ItemId, inv => inv.ItemId, (item, inv) => new { item, inv })
-                .Join(_ctx.Characters, invItem => invItem.inv.CharacterId, cha => cha.CharacterId, (invItem, cha) => new { invItem.inv, invItem.item, cha })
+            var result3 = items
+                .Join(inventories, item => item.ItemId, inv => inv.ItemId, (item, inv) => new { item, inv })
+                .Join(chars, invItem => invItem.inv.CharacterId, cha => cha.CharacterId, (invItem, cha) => new { invItem.inv, invItem.item, cha })
                 .Where(x => x.cha.PlayerId == id)
                 .GroupBy(x => x.item)
                 .Select(x => new { x.Key.Name, Total = x.Sum(y => y.inv.ItemCount) }).ToList();
 
-            var result2 = (from inv in _ctx.Inventories
-                          where inv.Character.PlayerId == id
+            var result2 = (from inv in inventories
+                           where inv.Character.PlayerId == id
                           group inv by inv.Item into g
                           select new { g.Key.Name, Total = g.Sum(y => y.ItemCount) });
 
-            var result4 = _ctx.Inventories
+            var result4 = inventories
                 .Where(x => x.Character.PlayerId == id)
                 .GroupBy(x => x.Item)
                 .Select(x => new { x.Key.Name, Total = x.Sum(y => y.ItemCount) }).ToList();
@@ -105,13 +108,13 @@ namespace LinqToDatabaseProject.Controllers
         [Route("{id}/InventoryDiversity")]
         public IActionResult GetAvgInventoryDiversity(int id)
         {
-            var result = (from cha in (from inv in _ctx.Inventories
+            var result = (from cha in (from inv in _managers.InventoryManager.GetAll()
                           where inv.Character.PlayerId == id
                           select new { inv.CharacterId, inv.ItemId }).Distinct()
                           group cha by cha.CharacterId into g
                           select g.Count()).Average();
 
-            var result2 = _ctx.Inventories
+            var result2 = _managers.InventoryManager.GetAll()
                 .Where(inv => inv.Character.PlayerId == id)
                 .DistinctBy(inv => new { inv.CharacterId, inv.ItemId })
                 .GroupBy(inv => inv.CharacterId)
@@ -139,8 +142,8 @@ namespace LinqToDatabaseProject.Controllers
         [Route("Ranking")]
         public IActionResult GetRanking()
         {
-            var result = (from p in (from p in _ctx.Players
-                              select new { 
+            var result = (from p in (from p in _managers.PlayerManager.GetAll()
+                                     select new { 
                                   p.PlayerId,
                                   p.AccountName,
                                   p.AccountLevel,

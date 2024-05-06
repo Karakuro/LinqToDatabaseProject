@@ -14,7 +14,8 @@ builder.Services.AddControllers();
 
 string connStr = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddSqlServer<GameDbContext>(connStr);
-builder.Services.AddScoped<IPlayerManager, PlayerManager>();
+//builder.Services.AddScoped<IPlayerManager, PlayerManager>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<GameDbContext>()
