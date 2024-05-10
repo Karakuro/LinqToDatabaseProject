@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace LinqToDatabaseProject.Managers
 {
-    public class GenericManager<T> where T : class
+    public class GenericManager<T> : IManager<T> where T : class
     {
         protected readonly GameDbContext _ctx;
         protected readonly DbSet<T> _dbSet;
