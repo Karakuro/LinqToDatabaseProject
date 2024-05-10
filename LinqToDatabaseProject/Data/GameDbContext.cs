@@ -7,6 +7,11 @@ namespace LinqToDatabaseProject.Data
     public class GameDbContext : IdentityDbContext<ApplicationUser>
     {
         public GameDbContext(DbContextOptions<GameDbContext> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
         public DbSet<Item> Items { get; set; }
         public DbSet<Character> Characters { get; set; }
         public DbSet<Player> Players { get; set; }

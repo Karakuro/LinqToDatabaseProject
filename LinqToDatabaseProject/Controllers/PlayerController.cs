@@ -108,11 +108,7 @@ namespace LinqToDatabaseProject.Controllers
         [Route("{id}/InventoryDiversity")]
         public IActionResult GetAvgInventoryDiversity(int id)
         {
-            var result = (from cha in (from inv in _managers.InventoryManager.GetAll()
-                          where inv.Character.PlayerId == id
-                          select new { inv.CharacterId, inv.ItemId }).Distinct()
-                          group cha by cha.CharacterId into g
-                          select g.Count()).Average();
+            var result = _managers.InventoryManager.GetAvgInventoryDiversity(id);
 
             var result2 = _managers.InventoryManager.GetAll()
                 .Where(inv => inv.Character.PlayerId == id)
@@ -120,7 +116,7 @@ namespace LinqToDatabaseProject.Controllers
                 .GroupBy(inv => inv.CharacterId)
                 .Average(group => group.Count());
 
-            return Ok();
+            return Ok(result);
         }
         /*
          * Implementare le seguenti GET con LINQ to query:

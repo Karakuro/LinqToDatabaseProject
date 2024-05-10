@@ -115,7 +115,7 @@ namespace LinqToDatabaseProject.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("Characters");
+                    b.ToTable("Characters", (string)null);
                 });
 
             modelBuilder.Entity("LinqToDatabaseProject.Data.Inventory", b =>
@@ -144,7 +144,7 @@ namespace LinqToDatabaseProject.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Inventories");
+                    b.ToTable("Inventories", (string)null);
                 });
 
             modelBuilder.Entity("LinqToDatabaseProject.Data.Item", b =>
@@ -176,7 +176,7 @@ namespace LinqToDatabaseProject.Migrations
 
                     b.HasIndex("RarityId");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("LinqToDatabaseProject.Data.Player", b =>
@@ -199,7 +199,7 @@ namespace LinqToDatabaseProject.Migrations
 
                     b.HasKey("PlayerId");
 
-                    b.ToTable("Players");
+                    b.ToTable("Players", (string)null);
                 });
 
             modelBuilder.Entity("LinqToDatabaseProject.Data.Rarity", b =>
@@ -219,7 +219,7 @@ namespace LinqToDatabaseProject.Migrations
 
                     b.HasKey("RarityId");
 
-                    b.ToTable("Rarities");
+                    b.ToTable("Rarities", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
